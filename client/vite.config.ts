@@ -7,11 +7,11 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/events': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:13001',
         changeOrigin: true,
       },
       '/send': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:13001',
         changeOrigin: true,
       },
     },

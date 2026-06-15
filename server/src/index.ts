@@ -2,7 +2,7 @@ import http from 'http';
 import { addClient, broadcast, createEvent, formatSSEMessage } from './sse';
 import { SendMessageRequest } from './types';
 
-const PORT = 3001;
+const PORT = 13001;
 
 const server = http.createServer((req, res) => {
   // CORS headers
@@ -73,8 +73,27 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify({ error: 'Not found' }));
 });
 
+// Auto-send simulated messages every 5 seconds
+const simulatedMessages = [
+  { type: 'notification' as const, message: '新用户注册' },
+  { type: 'update' as const, message: '数据已更新: 股票价格 +2.5%' },
+  { type: 'alert' as const, message: '系统负载过高: CPU 85%' },
+  { type: 'notification' as const, message: '收到新订单 #1234' },
+  { type: 'update' as const, message: '库存变更: 商品A -10' },
+  { type: 'alert' as const, message: '磁盘空间不足: 剩余5%' },
+];
+
+let messageIndex = 0;
+setInterval(() => {
+  const msg = simulatedMessages[messageIndex % simulatedMessages.length];
+  const event = createEvent(msg.type, msg.message);
+  broadcast(event);
+  messageIndex++;
+}, 5000);
+
 server.listen(PORT, () => {
   console.log(`SSE server running on http://localhost:${PORT}`);
   console.log(`SSE endpoint: http://localhost:${PORT}/events`);
   console.log(`Send endpoint: http://localhost:${PORT}/send`);
+  console.log(`Auto-sending simulated messages every 5 seconds`);
 });
